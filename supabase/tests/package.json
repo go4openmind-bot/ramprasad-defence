@@ -1,0 +1,13 @@
+{
+  "name": "ramprasad-defence-db-tests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Schema and RLS acceptance tests for the Ramprasad Defence database (runs on PGlite).",
+  "scripts": {
+    "test": "node validate.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.2.0"
+  }
+}

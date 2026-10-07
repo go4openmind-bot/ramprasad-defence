@@ -1,0 +1,13 @@
+# Secrets — must never be committed
+.env
+.env.*
+!.env.example
+.env.local
+
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
