@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { signIn } from './actions';
 import { isSupabaseConfigured } from '@/lib/supabase/env';
 
@@ -6,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string; next?: string };
+  searchParams: { error?: string; next?: string; ok?: string };
 }) {
   const configured = isSupabaseConfigured();
 
@@ -24,6 +25,9 @@ export default function LoginPage({
       )}
 
       {searchParams.error && <div className="alert error">{searchParams.error}</div>}
+      {searchParams.ok === 'reset' && (
+        <div className="alert info">Your password has been updated. Please sign in.</div>
+      )}
 
       <form action={signIn} className="card stack">
         <input type="hidden" name="next" value={searchParams.next ?? '/tenders'} />
@@ -38,6 +42,9 @@ export default function LoginPage({
         <button className="btn" type="submit" disabled={!configured}>
           Sign in
         </button>
+        <p className="small" style={{ margin: 0 }}>
+          <Link href="/forgot-password">Forgot your password?</Link>
+        </p>
       </form>
     </div>
   );
