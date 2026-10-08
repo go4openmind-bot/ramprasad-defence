@@ -17,20 +17,28 @@ if (typeof window !== 'undefined') {
   throw new Error('lib/supabase/env must only be imported from server-side code.');
 }
 
+/** Read the two values, trimming stray whitespace/newlines from pasted values. */
+export function readSupabaseEnv(): { url?: string; publishableKey?: string } {
+  return {
+    url: process.env.SUPABASE_URL?.trim(),
+    publishableKey: process.env.SUPABASE_PUBLISHABLE_KEY?.trim(),
+  };
+}
+
 export interface SupabaseEnv {
   url: string;
   publishableKey: string;
 }
 
-/** True when both required variables are present. */
+/** True when both required variables are present (after trimming). */
 export function isSupabaseConfigured(): boolean {
-  return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_PUBLISHABLE_KEY);
+  const { url, publishableKey } = readSupabaseEnv();
+  return Boolean(url && publishableKey);
 }
 
 /** Returns the URL and publishable key, or throws a secret-free error. */
 export function getSupabaseEnv(): SupabaseEnv {
-  const url = process.env.SUPABASE_URL;
-  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+  const { url, publishableKey } = readSupabaseEnv();
 
   if (!url || !publishableKey) {
     throw new Error(
@@ -38,10 +46,17 @@ export function getSupabaseEnv(): SupabaseEnv {
     );
   }
 
+  try {
+    // Validates the URL and rejects values with stray spaces/newlines.
+    new URL(url);
+  } catch {
+    throw new Error('SUPABASE_URL is not a valid URL (check for spaces or a trailing newline).');
+  }
+
   return { url, publishableKey };
 }
 
 /** Storage bucket for documents; defaults to "documents". */
 export function getDocumentsBucket(): string {
-  return process.env.SUPABASE_DOCUMENTS_BUCKET || 'documents';
+  return (process.env.SUPABASE_DOCUMENTS_BUCKET || 'documents').trim() || 'documents';
 }
